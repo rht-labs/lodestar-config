@@ -29,7 +29,7 @@ spec:
       containers:
       - envFrom:
         - secretRef:
-            name: lodestar-gitlab-configuration
+            name: lodestar-config-configuration
         readinessProbe:
           httpGet:
             path: /health/ready
