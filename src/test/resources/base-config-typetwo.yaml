@@ -1,0 +1,9 @@
+---
+more_information:
+  some_value: hello
+  another_value: type two
+other_options:
+  types:
+    options:
+      - label: OptionTwo
+        value: option2

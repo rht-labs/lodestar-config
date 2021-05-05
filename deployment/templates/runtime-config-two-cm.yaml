@@ -1,0 +1,27 @@
+{{- if .Values.development }}
+apiVersion: v1
+data:
+  lodestar-runtime-config-two.yaml: |
+    ---
+    basic_information:
+    engagement_types:
+        options:
+        - label: Type One
+            value: one
+        - label: Type Two
+            value: two
+        - label: Type Three
+            value: three
+            default: true
+    more_information:
+    some_value: hello
+    another_value: runtime config two
+    other_options:
+    types:
+        options:
+        - label: Option Two
+            value: optionTwo
+kind: ConfigMap
+metadata:
+  name: lodestar-runtime-two-cm
+{{- end }}

@@ -1,0 +1,96 @@
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  labels:
+    app: {{ .Values.name }}
+  name: {{ .Values.name }}
+spec:
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    app: {{ .Values.name }}
+    deploymentconfig: {{ .Values.name }}
+  strategy:
+    activeDeadlineSeconds: 21600
+    resources: {}
+    rollingParams:
+      intervalSeconds: 1
+      maxSurge: 25%
+      maxUnavailable: 25%
+      timeoutSeconds: 600
+      updatePeriodSeconds: 1
+    type: Rolling
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.name }}
+        deploymentconfig: {{ .Values.name }}
+    spec:
+      containers:
+      - envFrom:
+        - secretRef:
+            name: lodestar-gitlab-configuration
+        readinessProbe:
+          httpGet:
+            path: /health/ready
+            port: 8080
+            scheme: HTTP
+          timeoutSeconds: 1
+          periodSeconds: 10
+          successThreshold: 1
+          failureThreshold: 3
+        livenessProbe:
+          httpGet:
+            path: /health/live
+            port: 8080
+            scheme: HTTP
+          timeoutSeconds: 1
+          periodSeconds: 10
+          successThreshold: 1
+          failureThreshold: 3
+        image: {{ .Values.name }}:{{ .Values.imageTag }}
+        imagePullPolicy: Always
+        name: {{ .Values.name }}
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - name: lodestar-runtime-cm-volume
+          mountPath: {{ .Values.config.configFile.path }}/{{ .Values.config.configFile.name }}
+          subPath: {{ .Values.config.configFile.name }}
+        - name: lodestar-runtime-one-cm-volume
+          mountPath: {{ .Values.config.configOneFile.path }}/{{ .Values.config.configOneFile.name }}
+          subPath: {{ .Values.config.configOneFile.name }}
+        - name: lodestar-runtime-two-cm-volume
+          mountPath: {{ .Values.config.configTwoFile.path }}/{{ .Values.config.configTwoFile.name }}
+          subPath: {{ .Values.config.configOneFile.name }}
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: lodestar-runtime-cm-volume
+        configMap:
+          name: lodestar-runtime-cm
+      - name: lodestar-runtime-one-cm-volume
+        configMap:
+          name: lodestar-runtime-one-cm
+
+      - name: lodestar-runtime-two-cm-volume
+        configMap:
+          name: lodestar-runtime-two-cm
+  test: false
+  triggers:
+  - type: ConfigChange
+  - type: ImageChange
+    imageChangeParams:
+      automatic: true
+      from:
+        kind: ImageStreamTag
+        name: {{ .Values.name }}:{{ .Values.imageTag }}
+      containerNames:
+      - {{ .Values.name }}

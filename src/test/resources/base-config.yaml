@@ -1,0 +1,21 @@
+---
+basic_information:
+  engagement_types:
+    options:
+      - label: Type One
+        value: TypeOne
+      - label: TypeTwo
+        value: TypeTwo
+      - label: TypeThree
+        value: TypeThree
+        default: true
+more_information:
+  some_value: hello
+  another_value: base
+other_options:
+  types:
+    options:
+      - label: OptionOne
+        value: optionOne
+      - label: OptionTwo
+        value: optionTwo
