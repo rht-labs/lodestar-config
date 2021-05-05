@@ -21,7 +21,9 @@ public class RuntimeConfiguration extends ConfigMap {
     private Map<String, Object> configuration;
 
     public void resetConfiguration() {
-        configuration.clear();
+        if (null != configuration) {
+            configuration.clear();
+        }
     }
 
     public Map<String, Object> getConfiguration() {

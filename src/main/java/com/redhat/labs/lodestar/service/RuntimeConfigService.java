@@ -68,13 +68,17 @@ public class RuntimeConfigService {
 
     void loadRuntimeConfigurationData() {
 
+        LOGGER.debug("loading runtime configurations");
+
         // read runtime base config
         loadBaseRuntimeConfig();
+        LOGGER.debug("base configuration: {}", baseConfiguration);
 
         // Get List of engagement types from base config
         List<String> engagementTypes = getEngagementTypes();
 
         engagementTypes.stream().forEach(this::loadOverrideConfig);
+        LOGGER.debug("override configurations: {}", overrideConfigurations);
 
     }
 
