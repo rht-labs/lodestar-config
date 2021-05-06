@@ -15,11 +15,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
 
-//@Data
 @SuperBuilder
-//@NoArgsConstructor
-//@AllArgsConstructor
 public class ConfigMap {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigMap.class);
 
     private Path path;

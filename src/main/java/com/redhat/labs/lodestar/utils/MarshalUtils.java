@@ -12,13 +12,13 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
-public class YamlUtils {
+public class MarshalUtils {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(YamlUtils.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MarshalUtils.class);
 
     private static ObjectMapper om = new ObjectMapper(new YAMLFactory());
 
-    private YamlUtils() {
+    private MarshalUtils() {
         throw new IllegalStateException("Utility class");
     }
 

@@ -17,7 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.redhat.labs.lodestar.model.RuntimeConfiguration;
-import com.redhat.labs.lodestar.utils.YamlUtils;
+import com.redhat.labs.lodestar.utils.MarshalUtils;
 
 import io.quarkus.runtime.StartupEvent;
 
@@ -146,7 +146,7 @@ public class RuntimeConfigService {
         if (engagementType.isPresent() && overrideConfigurations.containsKey(engagementType.get())) {
 
             Map<String, Object> override = overrideConfigurations.get(engagementType.get()).getConfiguration();
-            return jsonb.toJson(YamlUtils.merge(base, override));
+            return jsonb.toJson(MarshalUtils.merge(base, override));
 
         }
 

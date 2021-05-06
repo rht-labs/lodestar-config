@@ -13,13 +13,13 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-class YamlUtilsTest {
+class MarshalUtilsTest {
 
     @ParameterizedTest
     @NullSource
     @ValueSource(strings = { "", " " })
     void testConvertToMapInvalidInput(String input) {
-        assertTrue(YamlUtils.convertToMap(input).isEmpty());
+        assertTrue(MarshalUtils.convertToMap(input).isEmpty());
     }
 
     @Test
@@ -27,7 +27,7 @@ class YamlUtilsTest {
     void testConverToMapSuccess() {
 
         String yaml = ResourceLoader.load("simple-config.yaml");
-        Optional<Map<String, Object>> optional = YamlUtils.convertToMap(yaml);
+        Optional<Map<String, Object>> optional = MarshalUtils.convertToMap(yaml);
 
         assertTrue(optional.isPresent());
         System.out.println(optional.get());
@@ -55,7 +55,7 @@ class YamlUtilsTest {
 
     @Test
     void testConvertToMapUnparsable() {
-        assertTrue(YamlUtils.convertToMap("--unparsable").isEmpty());
+        assertTrue(MarshalUtils.convertToMap("--unparsable").isEmpty());
     }
 
 }
