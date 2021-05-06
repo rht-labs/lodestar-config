@@ -1,54 +1,74 @@
-# lodestar-config project
+![Build Container](https://github.com/rht-labs/lodestar-config/workflows/Build%20Container/badge.svg)
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+# Lodestar - Config
 
-If you want to learn more about Quarkus, please visit its website: https://quarkus.io/ .
+The Configuration API for Lodestar.
 
-## Running the application in dev mode
+----
 
-You can run your application in dev mode that enables live coding using:
-```shell script
-./mvnw compile quarkus:dev
+# JSON REST API
+
+## OpenAPI Documentation of APIs
+
+The JSON APIs are documented using using OpenAPI.  The OpenAPI UI can be used to view the exposed endpoints and interact directly with them.
+
+Once the application is launched, the OpenAPI UI can be found at the following path:
+
+```
+http(s)://your-hostname[:port]/q/swagger-ui
 ```
 
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at http://localhost:8080/q/dev/.
+## Available Resources
 
-## Packaging and running the application
+### RuntimeConfig
 
-The application can be packaged using:
-```shell script
-./mvnw package
+The runtime config resource exposes an endpoints that allow clients to retrieve the base runtime configuration or the base configuration merged with a specific engagement type configuration.
+
+`GET /engagements`
+
+The following parameters are supported:
+
+Query Params:
+  * `type` - engagement type value listed in the base configuration file.
+
+----
+
+## Configuration
+
+The following environment variables are available:
+
+### Logging
+
+| Name | Example Value | Required |
+|------|---------------|----------|
+| LODESTAR_CONFIG_LOGGING | INFO | False |
+| LODESTAR_CONFIG_MIN_LOGGING | TRACE | false |
+
+### Runtime Configuration
+
+| Name | Example Value | Required |
+|------|---------------|----------|
+| RUNTIME_BASE_CONFIG_FILE | /runtime/lodestar-runtime-configuration.yaml | False |
+
+## Development
+
+See [the development README](deployment/README.md) for details on how to spin up a deployment for developing on OpenShift.
+
+## Components
+
+This project was built using Quarkus.
+
+## Testing
+
+`./mvw test` can be used to run the unit tests for the application.
+
+## Useful Commands
+
+``` bash
+# serve with hot reload at localhost:8080
+mvn quarkus:dev
+# run unit tests
+mvn test
+# build for production
+mvn quarkus:build
 ```
-It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
-
-If you want to build an _über-jar_, execute the following command:
-```shell script
-./mvnw package -Dquarkus.package.type=uber-jar
-```
-
-The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
-
-## Creating a native executable
-
-You can create a native executable using: 
-```shell script
-./mvnw package -Pnative
-```
-
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using: 
-```shell script
-./mvnw package -Pnative -Dquarkus.native.container-build=true
-```
-
-You can then execute your native executable with: `./target/lodestar-config-1.0.0-SNAPSHOT-runner`
-
-If you want to learn more about building native executables, please consult https://quarkus.io/guides/maven-tooling.html.
-
-## Provided examples
-
-### RESTEasy JAX-RS example
-
-REST is easy peasy with this Hello World RESTEasy resource.
-
-[Related guide section...](https://quarkus.io/guides/getting-started#the-jax-rs-resources)
