@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.json.bind.Jsonb;
 
@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 import com.redhat.labs.lodestar.model.RuntimeConfiguration;
 import com.redhat.labs.lodestar.utils.YamlUtils;
 
-import io.quarkus.scheduler.Scheduled;
+import io.quarkus.runtime.StartupEvent;
 
 @ApplicationScoped
 public class RuntimeConfigService {
@@ -29,9 +29,6 @@ public class RuntimeConfigService {
     @ConfigProperty(name = "configs.runtime.base.file")
     String runtimeBaseConfig;
 
-    @ConfigProperty(name = "configs.runtime.check.modified")
-    boolean reloadConfig;
-
     RuntimeConfiguration baseConfiguration;
     Map<String, RuntimeConfiguration> overrideConfigurations = new HashMap<>();
 
@@ -39,45 +36,29 @@ public class RuntimeConfigService {
     Jsonb jsonb;
 
     /**
-     * Periodically reloads the web hook and configuration data if the configured
-     * files have been modified.
+     * Create {@link RuntimeConfiguration}s at startup.
      */
-    @Scheduled(every = "30s")
-    void reloadConfigMapData() {
-        if (reloadConfig) {
-            resetConfigurations();
-            loadRuntimeConfigurationData();
-        }
+    void onStart(@Observes StartupEvent ev) {
+        createRuntimeConfigurations();
+        LOGGER.debug("runtime configurations loaded.");
     }
 
     /**
-     * Clear the configuration maps for the base and override configurations.
+     * Creates {@link RuntimeConfiguration}s for the configured base configuration
+     * and any override configurations.
      */
-    void resetConfigurations() {
-
-        // reset base config
-        if (null != baseConfiguration) {
-            baseConfiguration.resetConfiguration();
-        }
-
-        // reset each override config
-        overrideConfigurations.values().stream().filter(Objects::nonNull)
-                .forEach(RuntimeConfiguration::resetConfiguration);
-
-    }
-
-    void loadRuntimeConfigurationData() {
+    void createRuntimeConfigurations() {
 
         LOGGER.debug("loading runtime configurations");
 
         // read runtime base config
-        loadBaseRuntimeConfig();
+        createBaseRuntimeConfig();
         LOGGER.debug("base configuration: {}", baseConfiguration);
 
         // Get List of engagement types from base config
         List<String> engagementTypes = getEngagementTypes();
 
-        engagementTypes.stream().forEach(this::loadOverrideConfig);
+        engagementTypes.stream().forEach(this::createOverrideConfig);
         LOGGER.debug("override configurations: {}", overrideConfigurations);
 
     }
@@ -85,7 +66,7 @@ public class RuntimeConfigService {
     /**
      * Create {@link RuntimeConfiguration} for the configured base config file.
      */
-    void loadBaseRuntimeConfig() {
+    void createBaseRuntimeConfig() {
 
         // create base runtime config
         if (null == baseConfiguration) {
@@ -104,19 +85,19 @@ public class RuntimeConfigService {
     @SuppressWarnings("unchecked")
     List<String> getEngagementTypes() {
 
-        if (null != baseConfiguration) {
+        if (null == baseConfiguration) {
+            return new ArrayList<>();
 
-            Map<String, Object> configuration = baseConfiguration.getConfiguration();
-            List<Map<String, Object>> typesList = Optional.of(configuration)
-                    .map(m -> (Map<String, Object>) m.get("basic_information"))
-                    .map(m -> (Map<String, Object>) m.get("engagement_types"))
-                    .map(m -> (List<Map<String, Object>>) m.get("options")).orElse(new ArrayList<>());
-
-            return typesList.stream().flatMap(m -> m.entrySet().stream()).filter(e -> e.getKey().equals("value"))
-                    .map(e -> e.getValue().toString()).collect(Collectors.toList());
         }
 
-        return new ArrayList<>();
+        Map<String, Object> configuration = baseConfiguration.getConfiguration();
+        List<Map<String, Object>> typesList = Optional.of(configuration)
+                .map(m -> (Map<String, Object>) m.get("basic_information"))
+                .map(m -> (Map<String, Object>) m.get("engagement_types"))
+                .map(m -> (List<Map<String, Object>>) m.get("options")).orElse(new ArrayList<>());
+
+        return typesList.stream().flatMap(m -> m.entrySet().stream()).filter(e -> e.getKey().equals("value"))
+                .map(e -> e.getValue().toString()).collect(Collectors.toList());
 
     }
 
@@ -139,12 +120,12 @@ public class RuntimeConfigService {
     }
 
     /**
-     * Adds a {@link RuntimeConfiguration} to the override configurations
-     * {@link Map} for the given engagement type.
+     * Creates and adds a {@link RuntimeConfiguration} to the override
+     * configurations {@link Map} for the given engagement type.
      * 
      * @param engagementType
      */
-    void loadOverrideConfig(String engagementType) {
+    void createOverrideConfig(String engagementType) {
         overrideConfigurations.put(engagementType,
                 RuntimeConfiguration.builder().filePath(getOverrideFileName(engagementType)).build());
     }

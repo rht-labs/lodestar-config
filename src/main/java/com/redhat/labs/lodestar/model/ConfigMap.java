@@ -11,21 +11,20 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
 import lombok.experimental.SuperBuilder;
 
-@Data
+//@Data
 @SuperBuilder
-@NoArgsConstructor
-@AllArgsConstructor
+//@NoArgsConstructor
+//@AllArgsConstructor
 public class ConfigMap {
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigMap.class);
 
     private Path path;
     private String filePath;
+    @Getter
     @Builder.Default
     private Optional<String> content = Optional.empty();
     private long lastModifiedTime;
@@ -36,7 +35,7 @@ public class ConfigMap {
      * 
      * @return
      */
-    public boolean updateMountedFile() {
+    public boolean readMountedFile() {
 
         if (null == path) {
             path = Paths.get(filePath);

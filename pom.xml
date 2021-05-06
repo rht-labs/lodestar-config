@@ -20,6 +20,10 @@
 		<quarkus.platform.version>1.13.3.Final</quarkus.platform.version>
 		<surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
 		<lombok.version>1.18.20</lombok.version>
+		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
+		<sonar.project.key>rht-labs_lodestar-config</sonar.project.key>
+		<sonar.organization>rht-labs</sonar.organization>
+		<sonar.jacoco.reportPath>target/jacoco.exec</sonar.jacoco.reportPath>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
@@ -58,10 +62,6 @@
 			<artifactId>quarkus-smallrye-metrics</artifactId>
 		</dependency>
 		<!-- Other -->
-		<dependency>
-			<groupId>io.quarkus</groupId>
-			<artifactId>quarkus-scheduler</artifactId>
-		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
@@ -116,6 +116,27 @@
 						<maven.home>${maven.home}</maven.home>
 					</systemPropertyVariables>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.8.5</version>
+				<executions>
+					<execution>
+						<id>jacoco-initialize</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+						<phase>test-compile</phase>
+					</execution>
+					<execution>
+						<id>jacoco-site</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

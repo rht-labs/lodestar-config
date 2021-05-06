@@ -11,20 +11,14 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-@Data
+//@Data
 @SuperBuilder
-@NoArgsConstructor
-@AllArgsConstructor
-@EqualsAndHashCode(callSuper = true)
+//@NoArgsConstructor
+//@AllArgsConstructor
+//@EqualsAndHashCode(callSuper = true)
 public class RuntimeConfiguration extends ConfigMap {
 
     private Map<String, Object> configuration;
-
-    public void resetConfiguration() {
-        if (null != configuration) {
-            configuration.clear();
-        }
-    }
 
     public Map<String, Object> getConfiguration() {
 
@@ -33,7 +27,7 @@ public class RuntimeConfiguration extends ConfigMap {
         }
 
         // load content from file
-        updateMountedFile();
+        readMountedFile();
 
         // load map from content
         configuration = YamlUtils.convertToMap(getContent().orElse(null)).orElse(new HashMap<>());

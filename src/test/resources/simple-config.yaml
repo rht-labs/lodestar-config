@@ -1,0 +1,8 @@
+---
+simple_map:
+  key_one: key_value_one
+another_map:
+  nested_map:
+    list:
+      - One
+      - Two
