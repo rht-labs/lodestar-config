@@ -4,7 +4,7 @@
 
 The Configuration API for Lodestar.
 
-## Runtime Configuration
+## Runtime Configurations
 
 The base runtime configuration is a Yaml file.  The only required contents for the base configuration is the following:
 
@@ -18,13 +18,20 @@ basic_information:
         value: TypeTwo
 ```
 
-The options list in the `engagement_types` will be used to determine if there are any override files to merge. Values can be added to or overriden using files with the naming scheme `<base-file-name>-<engagement_type_value>.yaml`.
+The options list in the `engagement_types` will be used to determine if there are any override files to merge. Base config values can be added to or overriden using override files with the naming scheme `<base-file-name>-<engagement_type_value>.yaml`.
 
 For example:
 
-If the base configuration name is `runtime-config.yaml` and you wanted to override values for engagement type TypeTwo, you would need to create a mounted file with the name `runtime-config-typetwo.yaml`.
+If the base configuration name is `runtime-config.yaml` and you wanted to add to or override values for engagement type TypeTwo, you would need to create a mounted file with the name `runtime-config-typetwo.yaml`.
 
 If no file found matching the value of the engagement type, the base config will be returned.
+
+### Runtime Configuration Merging
+
+- All entries in the base config and not in the override config will be included
+- All entries in the override config and not in the base config will be included
+- All entries, excluding lists, that are in both the base and override configuration will use the values in the override config
+- **Any list that is in both base and override configs will be replaced with the values in the override config***
 
 ----
 
