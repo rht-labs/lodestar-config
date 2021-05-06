@@ -31,7 +31,7 @@ If no file found matching the value of the engagement type, the base config will
 - All entries in the base config and not in the override config will be included
 - All entries in the override config and not in the base config will be included
 - All entries, excluding lists, that are in both the base and override configuration will use the values in the override config
-- **Any list that is in both base and override configs will be replaced with the values in the override config***
+- **Any list that is in both base and override configs will be replaced with the values in the override config**
 
 ----
 
