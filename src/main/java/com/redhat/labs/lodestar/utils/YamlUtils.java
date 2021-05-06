@@ -1,10 +1,11 @@
 package com.redhat.labs.lodestar.utils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,49 +43,132 @@ public class YamlUtils {
     }
 
     /**
-     * Creates a new {@link Map} containing the base {@link Map} placing any
-     * corresponding attributes from the override {@link Map}.
+     * Returns a {@link Map} containing the merged base and override maps.
      * 
-     * @param mergedMap
      * @param base
      * @param override
+     * @return
      */
     @SuppressWarnings("unchecked")
     public static Map<String, Object> merge(Map<String, Object> base, Map<String, Object> override) {
 
-        Map<String, Object> mergedMap = new HashMap<>();
+        Map<String, Object> merged = new HashMap<>();
 
-        for (Entry<String, Object> entry : base.entrySet()) {
+        // add all in base, not in override
+        keysInMap1NotInMap2(base, override).stream().forEach(k -> merged.put(k, base.get(k)));
 
-            Object bValue = entry.getValue();
-            Object oValue = override.get(entry.getKey());
+        // add all in override, not in base
+        keysInMap1NotInMap2(override, base).stream().forEach(k -> merged.put(k, override.get(k)));
 
-            Object mergedValue = null;
+        List<String> keysInBoth = keysInMap1AndMap2(base, override);
+        for (String key : keysInBoth) {
 
-            if (null != bValue && null != oValue) {
+            Object bValue = base.get(key);
+            Object oValue = override.get(key);
 
-                if (bValue instanceof Map && oValue instanceof Map) {
-                    mergedValue = merge((Map<String, Object>) bValue, (Map<String, Object>) oValue);
-                } else if (bValue instanceof List && oValue instanceof List) {
-                    mergedValue = oValue;
-                } else {
-                    mergedValue = oValue;
-                }
-
-            } else if (null != bValue) {
-                mergedValue = bValue;
-            } else if (null != oValue) {
-                mergedValue = oValue;
-            }
-
-            // add to merged map
-            if (null != mergedValue) {
-                mergedMap.put(entry.getKey(), mergedValue);
+            if (bValue instanceof Map && oValue instanceof Map) {
+                merged.put(key, merge((Map<String, Object>) bValue, (Map<String, Object>) oValue));
+            } else if (bValue instanceof List && oValue instanceof List) {
+                merged.put(key, merge((List<Object>) bValue, (List<Object>) oValue));
+            } else {
+                merged.put(key, oValue);
             }
 
         }
 
-        return mergedMap;
+        return merged;
+
+    }
+
+    /**
+     * Returns a {@link List} of {@link Object} containing the {@link Object}s in
+     * list1 and list2.
+     * 
+     * @param list1
+     * @param list2
+     * @return
+     */
+    public static List<Object> merge(List<Object> list1, List<Object> list2) {
+
+        List<Object> merged = new ArrayList<>();
+
+        // find in list1, not list2
+        List<Object> inList1NotList2 = list1.stream().filter(o -> !contains(list2, o)).collect(Collectors.toList());
+        merged.addAll(inList1NotList2);
+
+        // find in list 2, not list1
+        List<Object> inList2NotList1 = list2.stream().filter(o -> !contains(list1, o)).collect(Collectors.toList());
+        merged.addAll(inList2NotList1);
+
+        // in both
+        List<Object> inBoth = list1.stream().filter(o -> contains(list2, o)).collect(Collectors.toList());
+        merged.addAll(inBoth);
+
+        return merged;
+
+    }
+
+    /**
+     * Returns a {@link List} of keys that are in map1, but not in map2.
+     * 
+     * @param map1
+     * @param map2
+     * @return
+     */
+    static List<String> keysInMap1NotInMap2(Map<String, Object> map1, Map<String, Object> map2) {
+        return map1.keySet().stream().filter(k -> !map2.containsKey(k)).collect(Collectors.toList());
+    }
+
+    /**
+     * Returns a {@link List} of keys that are in both map1 and map2.
+     * 
+     * @param map1
+     * @param map2
+     * @return
+     */
+    static List<String> keysInMap1AndMap2(Map<String, Object> map1, Map<String, Object> map2) {
+        return map1.keySet().stream().filter(k -> map2.containsKey(k)).collect(Collectors.toList());
+    }
+
+    /**
+     * Returns true if the given {@link Object} is found in the {@link List}.
+     * Otherwise, returns false.
+     * 
+     * @param list
+     * @param input
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    static boolean contains(List<Object> list, Object input) {
+
+        return list.stream().anyMatch(o -> (o instanceof Map && input instanceof Map
+                && isMapEquals((Map<String, Object>) o, (Map<String, Object>) input)) || o.equals(input));
+
+    }
+
+    /**
+     * Return true if both maps have the same number of keys and every key/value
+     * pair in map1 is found in map2. Otherwise, returns false.
+     * 
+     * @param map1
+     * @param map2
+     * @return
+     */
+    static boolean isMapEquals(Map<String, Object> map1, Map<String, Object> map2) {
+
+        if (map1.keySet().size() != map2.keySet().size()) {
+            return false;
+        }
+
+        for (String key : map1.keySet()) {
+
+            if (!map1.get(key).equals(map2.get(key))) {
+                return false;
+            }
+
+        }
+
+        return true;
 
     }
 
