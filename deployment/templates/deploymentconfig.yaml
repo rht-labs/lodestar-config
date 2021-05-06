@@ -66,7 +66,7 @@ spec:
           subPath: {{ .Values.config.configOneFile.name }}
         - name: lodestar-runtime-two-cm-volume
           mountPath: {{ .Values.config.configTwoFile.path }}/{{ .Values.config.configTwoFile.name }}
-          subPath: {{ .Values.config.configOneFile.name }}
+          subPath: {{ .Values.config.configTwoFile.name }}
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       schedulerName: default-scheduler

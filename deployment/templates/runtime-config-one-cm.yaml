@@ -3,24 +3,14 @@ apiVersion: v1
 data:
   lodestar-runtime-config-one.yaml: |
     ---
-    basic_information:
-    engagement_types:
-        options:
-        - label: Type One
-            value: one
-        - label: Type Two
-            value: two
-        - label: Type Three
-            value: three
-            default: true
     more_information:
-    some_value: hello
-    another_value: runtime config one
+      some_value: hello
+      another_value: runtime config one
     other_options:
-    types:
+      types:
         options:
         - label: Option One
-            value: option1
+          value: option1
 kind: ConfigMap
 metadata:
   name: lodestar-runtime-one-cm
