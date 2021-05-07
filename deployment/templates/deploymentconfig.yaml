@@ -28,8 +28,6 @@ spec:
     spec:
       containers:
       - envFrom:
-        - secretRef:
-            name: lodestar-config-configuration
         readinessProbe:
           httpGet:
             path: /health/ready

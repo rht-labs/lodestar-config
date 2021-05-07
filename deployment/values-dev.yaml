@@ -13,9 +13,6 @@ git:
   uri: https://github.com/rht-labs/lodestar-config.git
   ref: master
 
-runtimeBaseConfigFile: /runtime/lodestar-runtime-config.yaml
-runtimeConfigCheckModified: true
-
 config:
   configFile:
     path: /runtime
