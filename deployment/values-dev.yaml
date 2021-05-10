@@ -13,13 +13,13 @@ git:
   uri: https://github.com/rht-labs/lodestar-config.git
   ref: master
 
-config:
-  configFile:
+runtimeConfigs:
+  - name: lodestar-runtime
+    file: lodestar-runtime-config.yaml
     path: /runtime
-    name: lodestar-runtime-config.yaml
-  configOneFile:
+  - name: lodestar-runtime-one
+    file: lodestar-runtime-config-one.yaml
     path: /runtime
-    name: lodestar-runtime-config-one.yaml
-  configTwoFile:
+  - name: lodestar-runtime-two
+    file: lodestar-runtime-config-two.yaml
     path: /runtime
-    name: lodestar-runtime-config-two.yaml
