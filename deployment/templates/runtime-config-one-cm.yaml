@@ -1,0 +1,17 @@
+{{- if .Values.development }}
+apiVersion: v1
+data:
+  lodestar-runtime-config-one.yaml: |
+    ---
+    more_information:
+      some_value: hello
+      another_value: runtime config one
+    other_options:
+      types:
+        options:
+        - label: Option One
+          value: option1
+kind: ConfigMap
+metadata:
+  name: lodestar-runtime-one-cm
+{{- end }}

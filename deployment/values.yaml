@@ -1,0 +1,9 @@
+name: lodestar-config
+
+servicePort: 8080
+
+imageName: "quay.io/rht-labs/lodestar-config"
+imageTag: "latest" # This is intended to be overridden by the parent Helm chart.
+
+namespaces: lodestar-frontend
+
