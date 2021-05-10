@@ -24,6 +24,7 @@
 		<sonar.project.key>rht-labs_lodestar-config</sonar.project.key>
 		<sonar.organization>rht-labs</sonar.organization>
 		<sonar.jacoco.reportPath>target/jacoco.exec</sonar.jacoco.reportPath>
+		<sonar.branch.name>main</sonar.branch.name>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
