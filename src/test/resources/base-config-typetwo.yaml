@@ -1,7 +1,7 @@
 ---
 more_information:
-  some_value: hello
   another_value: type two
+  some_value: hello
 other_options:
   types:
     options:

@@ -7,13 +7,12 @@ import java.util.Optional;
 import javax.json.bind.Jsonb;
 import javax.json.bind.JsonbBuilder;
 import javax.json.bind.JsonbConfig;
-import javax.json.bind.config.PropertyOrderStrategy;
 
 import org.junit.jupiter.api.Test;
 
 class ConfigServiceTest {
 
-    JsonbConfig config = new JsonbConfig().withFormatting(true).withPropertyOrderStrategy(PropertyOrderStrategy.LEXICOGRAPHICAL);
+    JsonbConfig config = new JsonbConfig().withFormatting(true);
     Jsonb jsonb = JsonbBuilder.create(config);
 
     @Test
