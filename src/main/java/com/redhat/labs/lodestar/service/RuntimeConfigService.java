@@ -114,7 +114,7 @@ public class RuntimeConfigService {
         String baseFileName = runtimeBaseConfig.substring(0, index);
         String baseFileType = runtimeBaseConfig.substring(index + 1);
 
-        return new StringBuilder(baseFileName).append("-").append(engagementType.toLowerCase()).append(".")
+        return new StringBuilder(baseFileName).append("-").append(engagementType).append(".")
                 .append(baseFileType).toString();
 
     }
