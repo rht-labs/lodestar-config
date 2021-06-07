@@ -29,7 +29,7 @@ cd lodestar-config/deployment
 ```shell script
 helm template . \
   --values values-dev.yaml \
-  --set git.uri=https://github.com/dwasinge/lodestar-config.git \
+  --set git.uri=https://github.com/rht-labs/lodestar-config.git \
   --set git.ref=main \
   --set namespaces=<your-namespaces> \
 | oc apply -f -
