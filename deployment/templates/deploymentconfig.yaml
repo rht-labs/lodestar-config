@@ -28,6 +28,8 @@ spec:
     spec:
       containers:
       - envFrom:
+        - secretRef:
+            name: {{ .Values.name }}-secret
         readinessProbe:
           httpGet:
             path: /health/ready

@@ -13,6 +13,10 @@ git:
   uri: https://github.com/rht-labs/lodestar-config.git
   ref: master
 
+jwtPublicKeyLocation: false
+jwtIssuer: false
+jwtEnable: true
+
 runtimeConfigs:
   - name: lodestar-runtime
     file: lodestar-runtime-config.yaml
