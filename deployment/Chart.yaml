@@ -1,6 +1,6 @@
 apiVersion: v2
-name: status
-description: A Helm chart to deploy the status API of LodeStar
+name: config
+description: A Helm chart to deploy the config API of LodeStar
 
 # A chart can be either an 'application' or a 'library' chart.
 #
