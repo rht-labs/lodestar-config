@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -152,6 +153,24 @@ public class RuntimeConfigService {
 
         return jsonb.toJson(base);
 
+    }
+    
+    /**
+     * Returns a mapping of engagement type to rbac access indicating the groups 
+     * that can write engagements. The purpose is to inform the front end on a user's
+     * ability to write data for an engagement
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public Map<String, Set<String>> getPermission() {
+
+        Map<String, Object> configuration = baseConfiguration.getConfiguration();
+        Map<String, Set<String>> typesList = Optional.of(configuration)
+                .map(m -> (Map<String, Set<String>>) m.get("rbac")).orElse(new HashMap<>());
+
+        LOGGER.debug("rbac {}", typesList);
+
+        return typesList;
     }
 
 }

@@ -19,3 +19,12 @@ other_options:
         value: optionOne
       - label: OptionTwo
         value: optionTwo
+rbac:
+  felt:
+  - felt-writer
+  - writer
+  velvet:
+  - writer
+  velour:
+  - velour-writer
+  - writer

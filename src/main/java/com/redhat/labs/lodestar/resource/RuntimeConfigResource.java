@@ -9,6 +9,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import com.redhat.labs.lodestar.service.RuntimeConfigService;
 
@@ -23,6 +24,12 @@ public class RuntimeConfigResource {
     @GET
     public String get(@QueryParam("type") Optional<String> type) {
         return configService.getRuntimeConfiguration(type);
+    }
+    
+    @GET
+    @Path("rbac")
+    public Response getPermission() {
+        return Response.ok(configService.getPermission()).build();
     }
 
 }
