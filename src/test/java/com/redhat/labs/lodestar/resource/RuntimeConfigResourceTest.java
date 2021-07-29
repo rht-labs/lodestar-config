@@ -1,90 +1,71 @@
 package com.redhat.labs.lodestar.resource;
 
 import static io.restassured.RestAssured.given;
+import static io.restassured.path.json.JsonPath.from;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
+import com.redhat.labs.lodestar.utils.ResourceLoader;
+
+import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 
 @QuarkusTest
+@TestHTTPEndpoint(RuntimeConfigResource.class)
 class RuntimeConfigResourceTest {
+    
+    @Test
+    void testGetPermission() {
+        String response = given().when().get("/rbac").then().statusCode(200).extract().asString();
+        
+        Map<String, List<String>> perm = from(response).getMap("");
 
-    static final String RUNTIME_CONFIG_API = "/api/v1/configs/runtime";
-
+        assertTrue(perm.containsKey("velour"));
+        assertTrue(perm.containsKey("velvet"));
+        assertTrue(perm.containsKey("felt"));
+        assertTrue(perm.get("velour").contains("writer"));
+        assertTrue(perm.get("velvet").contains("writer"));
+        assertTrue(perm.get("felt").contains("writer"));
+        assertTrue(perm.get("velour").contains("velour-writer"));
+        assertTrue(perm.get("felt").contains("felt-writer"));
+        assertEquals(3, perm.size());
+        assertEquals(2, perm.get("velour").size());
+        assertEquals(2, perm.get("felt").size());
+        assertEquals(1, perm.get("velvet").size());
+    }
+    
     @Test
     void testGetRuntimeConfigurationNoType() {
-
-        given().when().contentType(ContentType.JSON).get(RUNTIME_CONFIG_API).then().statusCode(200).body(is("\n{\n" + "    \"basic_information\": {\n" + "        \"engagement_types\": {\n"
-                + "            \"options\": [\n" + "                {\n"
-                + "                    \"label\": \"Type One\",\n" + "                    \"value\": \"TypeOne\"\n"
-                + "                },\n" + "                {\n" + "                    \"label\": \"TypeTwo\",\n"
-                + "                    \"value\": \"TypeTwo\"\n" + "                },\n" + "                {\n"
-                + "                    \"label\": \"TypeThree\",\n" + "                    \"value\": \"TypeThree\",\n"
-                + "                    \"default\": true\n" + "                }\n" + "            ]\n" + "        }\n"
-                + "    },\n" + "    \"more_information\": {\n" + "        \"some_value\": \"hello\",\n"
-                + "        \"another_value\": \"base\"\n" + "    },\n" + "    \"other_options\": {\n"
-                + "        \"types\": {\n" + "            \"options\": [\n" + "                {\n"
-                + "                    \"label\": \"OptionOne\",\n" + "                    \"value\": \"optionOne\"\n"
-                + "                },\n" + "                {\n" + "                    \"label\": \"OptionTwo\",\n"
-                + "                    \"value\": \"optionTwo\"\n" + "                }\n" + "            ]\n"
-                + "        }\n" + "    }\n" + "}"));
+        String response = ResourceLoader.load("expected/service-base-config.json");
+        given().when().contentType(ContentType.JSON).get().then().statusCode(200).body(is(response));
 
     }
 
     @Test
     void testGetRuntimeConfigurationTypeOne() {
-
-        given().when().contentType(ContentType.JSON).queryParam("type", "TypeOne").get(RUNTIME_CONFIG_API).then().statusCode(200).body(is("\n" + "{\n" + "    \"more_information\": {\n" + "        \"another_value\": \"type one\",\n"
-                + "        \"some_value\": \"hello\"\n" + "    },\n" + "    \"basic_information\": {\n"
-                + "        \"engagement_types\": {\n" + "            \"options\": [\n" + "                {\n"
-                + "                    \"label\": \"Type One\",\n" + "                    \"value\": \"TypeOne\"\n"
-                + "                },\n" + "                {\n" + "                    \"label\": \"TypeTwo\",\n"
-                + "                    \"value\": \"TypeTwo\"\n" + "                },\n" + "                {\n"
-                + "                    \"label\": \"TypeThree\",\n" + "                    \"value\": \"TypeThree\",\n"
-                + "                    \"default\": true\n" + "                }\n" + "            ]\n" + "        }\n"
-                + "    },\n" + "    \"other_options\": {\n" + "        \"types\": {\n" + "            \"options\": [\n"
-                + "                {\n" + "                    \"label\": \"OptionOne\",\n"
-                + "                    \"value\": \"option1\"\n" + "                }\n" + "            ]\n"
-                + "        }\n" + "    }\n" + "}"));
+        String response = ResourceLoader.load("expected/service-get-type-one-config.json");
+        given().when().contentType(ContentType.JSON).queryParam("type", "TypeOne").get().then().statusCode(200).body(is(response));
 
     }
 
     @Test
     void testGetRuntimeConfigurationTypeTwo() {
-
-        given().when().contentType(ContentType.JSON).queryParam("type", "TypeTwo").get(RUNTIME_CONFIG_API).then().statusCode(200).body(is("\n" + "{\n" + "    \"more_information\": {\n" + "        \"another_value\": \"type two\",\n"
-                + "        \"some_value\": \"hello\"\n" + "    },\n" + "    \"basic_information\": {\n"
-                + "        \"engagement_types\": {\n" + "            \"options\": [\n" + "                {\n"
-                + "                    \"label\": \"Type One\",\n" + "                    \"value\": \"TypeOne\"\n"
-                + "                },\n" + "                {\n" + "                    \"label\": \"TypeTwo\",\n"
-                + "                    \"value\": \"TypeTwo\"\n" + "                },\n" + "                {\n"
-                + "                    \"label\": \"TypeThree\",\n" + "                    \"value\": \"TypeThree\",\n"
-                + "                    \"default\": true\n" + "                }\n" + "            ]\n" + "        }\n"
-                + "    },\n" + "    \"other_options\": {\n" + "        \"types\": {\n" + "            \"options\": [\n"
-                + "                {\n" + "                    \"label\": \"OptionTwo\",\n"
-                + "                    \"value\": \"option2\"\n" + "                }\n" + "            ]\n"
-                + "        }\n" + "    }\n" + "}"));
+        String response = ResourceLoader.load("expected/service-get-type-two-config.json");
+        given().when().contentType(ContentType.JSON).queryParam("type", "TypeTwo").get().then().statusCode(200).body(is(response));
 
     }
 
     @Test
     void testGetRuntimeConfigurationTypeUnknown() {
-
-        given().when().contentType(ContentType.JSON).queryParam("type", "TypeThree").get(RUNTIME_CONFIG_API).then().statusCode(200).body(is("\n" + "{\n" + "    \"more_information\": {\n" + "        \"some_value\": \"hello\",\n"
-                + "        \"another_value\": \"base\"\n" + "    },\n" + "    \"basic_information\": {\n"
-                + "        \"engagement_types\": {\n" + "            \"options\": [\n" + "                {\n"
-                + "                    \"label\": \"Type One\",\n" + "                    \"value\": \"TypeOne\"\n"
-                + "                },\n" + "                {\n" + "                    \"label\": \"TypeTwo\",\n"
-                + "                    \"value\": \"TypeTwo\"\n" + "                },\n" + "                {\n"
-                + "                    \"label\": \"TypeThree\",\n" + "                    \"value\": \"TypeThree\",\n"
-                + "                    \"default\": true\n" + "                }\n" + "            ]\n" + "        }\n"
-                + "    },\n" + "    \"other_options\": {\n" + "        \"types\": {\n" + "            \"options\": [\n"
-                + "                {\n" + "                    \"label\": \"OptionOne\",\n"
-                + "                    \"value\": \"optionOne\"\n" + "                },\n" + "                {\n"
-                + "                    \"label\": \"OptionTwo\",\n" + "                    \"value\": \"optionTwo\"\n"
-                + "                }\n" + "            ]\n" + "        }\n" + "    }\n" + "}"));
+        String response = ResourceLoader.load("expected/service-get-type-three-config.json");
+        given().when().contentType(ContentType.JSON).queryParam("type", "TypeThree").get().then().statusCode(200).body(is(response));
 
     }
 

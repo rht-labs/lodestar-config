@@ -20,7 +20,7 @@ class HealthCheckResourceTest {
                 + "            \"status\": \"UP\",\n" + "            \"data\": {\n" + "                \"OK\": \"👍\"\n"
                 + "            }\n" + "        }\n" + "    ]\n" + "}";
 
-        given().when().contentType(ContentType.JSON).get("/health").then().statusCode(200).body(is(expected));
+        given().when().contentType(ContentType.JSON).get("q/health").then().statusCode(200).body(is(expected));
 
     }
 

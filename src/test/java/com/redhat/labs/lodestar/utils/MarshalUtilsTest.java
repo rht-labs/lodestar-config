@@ -30,7 +30,6 @@ class MarshalUtilsTest {
         Optional<Map<String, Object>> optional = MarshalUtils.convertToMap(yaml);
 
         assertTrue(optional.isPresent());
-        System.out.println(optional.get());
 
         Map<String, Object> config = optional.get();
         assertNotNull(config);

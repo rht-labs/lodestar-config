@@ -1,0 +1,49 @@
+
+{
+    "more_information": {
+        "another_value": "type two",
+        "some_value": "hello"
+    },
+    "rbac": {
+        "felt": [
+            "felt-writer",
+            "writer"
+        ],
+        "velvet": [
+            "writer"
+        ],
+        "velour": [
+            "velour-writer",
+            "writer"
+        ]
+    },
+    "basic_information": {
+        "engagement_types": {
+            "options": [
+                {
+                    "label": "Type One",
+                    "value": "TypeOne"
+                },
+                {
+                    "label": "TypeTwo",
+                    "value": "TypeTwo"
+                },
+                {
+                    "label": "TypeThree",
+                    "value": "TypeThree",
+                    "default": true
+                }
+            ]
+        }
+    },
+    "other_options": {
+        "types": {
+            "options": [
+                {
+                    "label": "OptionTwo",
+                    "value": "option2"
+                }
+            ]
+        }
+    }
+}
