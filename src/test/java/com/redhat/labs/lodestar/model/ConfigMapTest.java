@@ -18,7 +18,7 @@ class ConfigMapTest {
 
         ConfigMap cm = ConfigMap.builder().filePath(UNREADABLE_FILE).build();
 
-        boolean modified = cm.readMountedFile();
+        boolean modified = cm.readAndUpdateMountedFile();
         assertFalse(modified);
         assertTrue(cm.getContent().isEmpty());
         
@@ -27,12 +27,14 @@ class ConfigMapTest {
 
     @Test void testConfigMapNotModified() throws IOException {
 
-        ConfigMap cm = ConfigMap.builder().lastModifiedTime(getLastModifiedTime(READABLE_FILE)).filePath(READABLE_FILE).build();
-        
+        ConfigMap cm = ConfigMap.builder().filePath(READABLE_FILE).build();
+        boolean modified = cm.readAndUpdateMountedFile();
+        assertTrue(modified);
+        assertTrue(cm.getContent().isPresent());
 
-        boolean modified = cm.readMountedFile();
+        modified = cm.readAndUpdateMountedFile();
         assertFalse(modified);
-        assertTrue(cm.getContent().isEmpty());  
+        assertTrue(cm.getContent().isPresent());
 
     }
 
@@ -40,14 +42,9 @@ class ConfigMapTest {
         
         ConfigMap cm = ConfigMap.builder().filePath(READABLE_FILE).build();
 
-        boolean modified = cm.readMountedFile();
+        boolean modified = cm.readAndUpdateMountedFile();
         assertTrue(modified);
         assertTrue(cm.getContent().isPresent());
         
     }
-
-    private long getLastModifiedTime(String file) throws IOException {
-        return Files.getLastModifiedTime(Paths.get(file)).toMillis();
-    }
-
 }

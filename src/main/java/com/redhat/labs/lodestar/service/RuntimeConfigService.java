@@ -1,11 +1,8 @@
 package com.redhat.labs.lodestar.service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.io.IOException;
+import java.nio.file.*;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -13,6 +10,7 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.json.bind.Jsonb;
 
+import io.quarkus.scheduler.Scheduled;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +31,7 @@ public class RuntimeConfigService {
     RuntimeConfiguration baseConfiguration;
     Map<String, RuntimeConfiguration> overrideConfigurations = new HashMap<>();
 
+
     @Inject
     Jsonb jsonb;
 
@@ -41,38 +40,37 @@ public class RuntimeConfigService {
      */
     void onStart(@Observes StartupEvent ev) {
         createRuntimeConfigurations();
+        loadModifiedWebhooks();
         LOGGER.debug("runtime configurations loaded.");
     }
 
     /**
+     * Can't trust modification of config maps meta-data. need to read the data
+     */
+    @Scheduled(every = "60s", delayed = "10s")
+    void loadModifiedWebhooks() {
+        baseConfiguration.loadFromConfigMapIfChanged();
+        overrideConfigurations.values().forEach(RuntimeConfiguration::loadFromConfigMapIfChanged);
+    }
+
+    /**
      * Creates {@link RuntimeConfiguration}s for the configured base configuration
-     * and any override configurations.
+     * and any override configurations. Only happens on first load. New engagement type
+     * customizations require a new configmap which requires a change to the deployment config
      */
     void createRuntimeConfigurations() {
 
         LOGGER.debug("loading runtime configurations");
 
         // read runtime base config
-        createBaseRuntimeConfig();
-        LOGGER.debug("base configuration: {}", baseConfiguration);
+        baseConfiguration = RuntimeConfiguration.builder().filePath(runtimeBaseConfig).build();
+        baseConfiguration.loadFromConfigMapIfChanged();
 
         // Get List of engagement types from base config
         List<String> engagementTypes = getEngagementTypes();
 
         engagementTypes.stream().forEach(this::createOverrideConfig);
-        LOGGER.debug("override configurations: {}", overrideConfigurations);
-
-    }
-
-    /**
-     * Create {@link RuntimeConfiguration} for the configured base config file.
-     */
-    void createBaseRuntimeConfig() {
-
-        // create base runtime config
-        if (null == baseConfiguration) {
-            baseConfiguration = RuntimeConfiguration.builder().filePath(runtimeBaseConfig).build();
-        }
+        LOGGER.debug("override configurations: {}", overrideConfigurations.keySet());
 
     }
 
@@ -86,11 +84,6 @@ public class RuntimeConfigService {
     @SuppressWarnings("unchecked")
     List<String> getEngagementTypes() {
 
-        if (null == baseConfiguration) {
-            return new ArrayList<>();
-
-        }
-
         Map<String, Object> configuration = baseConfiguration.getConfiguration();
         List<Map<String, Object>> typesList = Optional.of(configuration)
                 .map(m -> (Map<String, Object>) m.get("basic_information"))
@@ -103,32 +96,20 @@ public class RuntimeConfigService {
     }
 
     /**
-     * Builds a {@link String} representing the runtime configuration override file
-     * for the given engagement type.
-     * 
-     * @param engagementType
-     * @return
-     */
-    String getOverrideFileName(String engagementType) {
-
-        int index = runtimeBaseConfig.indexOf(".");
-        String baseFileName = runtimeBaseConfig.substring(0, index);
-        String baseFileType = runtimeBaseConfig.substring(index + 1);
-
-        return new StringBuilder(baseFileName).append("-").append(engagementType).append(".")
-                .append(baseFileType).toString();
-
-    }
-
-    /**
      * Creates and adds a {@link RuntimeConfiguration} to the override
      * configurations {@link Map} for the given engagement type.
      * 
      * @param engagementType
      */
     void createOverrideConfig(String engagementType) {
-        overrideConfigurations.put(engagementType,
-                RuntimeConfiguration.builder().filePath(getOverrideFileName(engagementType)).build());
+        String filePath = this.runtimeBaseConfig.replaceAll("base", engagementType);
+        RuntimeConfiguration rc = RuntimeConfiguration.builder().filePath(filePath).build();
+        if(rc.checkPath()) {
+            rc.loadFromConfigMapIfChanged();
+            overrideConfigurations.put(engagementType, rc);
+        } else if(LOGGER.isWarnEnabled()) {
+            LOGGER.warn("Unable to read file {} so it will no longer be checked", filePath);
+        }
     }
 
     /**

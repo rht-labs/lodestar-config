@@ -24,7 +24,7 @@ class ConfigServiceTest {
 
         RuntimeConfigService service = new RuntimeConfigService();
         service.jsonb = jsonb;
-        service.runtimeBaseConfig = "src/test/resources/base-config.yaml";
+        service.runtimeBaseConfig = "src/test/resources/runtime-config-base.yaml";
 
         service.createRuntimeConfigurations();
 
@@ -40,7 +40,7 @@ class ConfigServiceTest {
 
         RuntimeConfigService service = new RuntimeConfigService();
         service.jsonb = jsonb;
-        service.runtimeBaseConfig = "src/test/resources/base-config.yaml";
+        service.runtimeBaseConfig = "src/test/resources/runtime-config-base.yaml";
 
         service.createRuntimeConfigurations();
 
@@ -55,7 +55,7 @@ class ConfigServiceTest {
 
         RuntimeConfigService service = new RuntimeConfigService();
         service.jsonb = jsonb;
-        service.runtimeBaseConfig = "src/test/resources/base-config.yaml";
+        service.runtimeBaseConfig = "src/test/resources/runtime-config-base.yaml";
 
         service.createRuntimeConfigurations();
 
@@ -67,11 +67,11 @@ class ConfigServiceTest {
     @Test
     void testGetTypeThreeConfigurationNotFound() {
 
-        String expected = ResourceLoader.load("expected/service-get-type-three-config.json");
+        String expected = ResourceLoader.load("expected/service-base-config.json");
 
         RuntimeConfigService service = new RuntimeConfigService();
         service.jsonb = jsonb;
-        service.runtimeBaseConfig = "src/test/resources/base-config.yaml";
+        service.runtimeBaseConfig = "src/test/resources/runtime-config-base.yaml";
 
         service.createRuntimeConfigurations();
 

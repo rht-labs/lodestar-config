@@ -16,6 +16,7 @@ class RuntimeConfigurationTest {
         RuntimeConfiguration rc = RuntimeConfiguration.builder().filePath("unknown-config").build();
         assertNotNull(rc);
 
+        rc.loadFromConfigMapIfChanged();
         Map<String, Object> config = rc.getConfiguration();
         assertNotNull(config);
 
@@ -30,6 +31,7 @@ class RuntimeConfigurationTest {
                 .build();
         assertNotNull(rc);
 
+        rc.loadFromConfigMapIfChanged();
         Map<String, Object> config = rc.getConfiguration();
         assertNotNull(config);
 
@@ -44,6 +46,7 @@ class RuntimeConfigurationTest {
                 .build();
         assertNotNull(rc);
 
+        rc.loadFromConfigMapIfChanged();
         Map<String, Object> config = rc.getConfiguration();
         assertNotNull(config);
 

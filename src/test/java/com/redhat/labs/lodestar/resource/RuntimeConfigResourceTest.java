@@ -64,7 +64,7 @@ class RuntimeConfigResourceTest {
 
     @Test
     void testGetRuntimeConfigurationTypeUnknown() {
-        String response = ResourceLoader.load("expected/service-get-type-three-config.json");
+        String response = ResourceLoader.load("expected/service-base-config.json");
         given().when().contentType(ContentType.JSON).queryParam("type", "TypeThree").get().then().statusCode(200).body(is(response));
 
     }
