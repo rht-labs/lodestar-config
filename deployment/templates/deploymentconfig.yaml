@@ -57,7 +57,7 @@ spec:
         terminationMessagePolicy: File
         volumeMounts:
 {{- range .Values.runtimeConfigs }}
-        - name: lodestar-runtime-{{ . }}-cm-volume
+        - name: lodestar-runtime-{{ . | lower }}-cm-volume
           mountPath: {{ $.Values.baseConfigMapPath }}/{{ . }}
 {{- end }}
         - name: hook-cm-volume
@@ -69,9 +69,9 @@ spec:
       terminationGracePeriodSeconds: 30
       volumes:
   {{- range .Values.runtimeConfigs }}
-      - name: lodestar-runtime-{{ . }}-cm-volume
+      - name: lodestar-runtime-{{ . | lower }}-cm-volume
         configMap:
-          name: lodestar-runtime-{{ . }}-cm
+          name: lodestar-runtime-{{ . | lower }}-cm
 {{- end }}
       - name: hook-cm-volume
         configMap:
