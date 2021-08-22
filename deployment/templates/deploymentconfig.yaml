@@ -61,7 +61,7 @@ spec:
           mountPath: {{ $.Values.baseConfigMapPath }}/{{ . }}
 {{- end }}
         - name: hook-cm-volume
-          mountPath: /hooks
+          mountPath: /webhooks
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       schedulerName: default-scheduler
