@@ -53,12 +53,22 @@ http(s)://your-hostname[:port]/q/swagger-ui
 
 The runtime config resource exposes an endpoints that allow clients to retrieve the base runtime configuration or the base configuration merged with a specific engagement type configuration.
 
-`GET /engagements`
+`GET /api/v1/configs/runtime`
 
 The following parameters are supported:
 
 Query Params:
-  * `type` - engagement type value listed in the base configuration file.
+  * `type` - engagement type value listed in the base configuration file. If not found, it reverts to the base
+
+### Rbac Perimissions
+
+This resource returns a map of engagement types with a list of roles (groups) that have writer permission
+
+`GET /api/v1/configs/runtime/rbac`
+
+### Webhooks Needed by engagements
+
+Provides a list of webhooks that need to be added to each engagement on creation.
 
 ----
 
@@ -75,9 +85,11 @@ The following environment variables are available:
 
 ### Runtime Configuration
 
-| Name | Example Value | Required |
+| Name | Default Value | Required |
 |------|---------------|----------|
-| RUNTIME_BASE_CONFIG_FILE | /runtime/lodestar-runtime-configuration.yaml | False |
+| RUNTIME_BASE_CONFIG_FILE | /runtime/base/lodestar-runtime-config-base.yaml | False |
+| WEBHOOK_BASE_CONFIG_FILE | /webhooks/webhooks.yaml | False |
+| LODESTAR_ENGAGEMENTS_API_URL | http://lodestar-engagements:8080 | False
 
 ## Development
 
