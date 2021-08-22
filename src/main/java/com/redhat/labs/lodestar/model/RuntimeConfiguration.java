@@ -21,7 +21,7 @@ public class RuntimeConfiguration extends ConfigMap {
     }
 
     public Map<String, Object> getConfiguration() {
-         return configuration;
+        return configuration;
     }
 
 }

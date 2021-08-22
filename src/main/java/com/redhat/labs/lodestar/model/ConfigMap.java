@@ -5,7 +5,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.attribute.FileTime;
 import java.util.Optional;
 
 import lombok.ToString;
@@ -29,12 +28,12 @@ public class ConfigMap {
     private Optional<String> content = Optional.empty();
 
     /**
-     * The last modified date is flakely in-container. Instead, read file
+     * The last modified date is flaky in-container. Instead, read file
      * each time and update when changed. Limited reads via scheduler
      * @return true if the content changed
      */
     public boolean readAndUpdateMountedFile() {
-        String currentContent = content.isPresent() ? content.get() : "";
+        String currentContent = content.orElse("");
 
         if (!checkPath()) {
             LOGGER.warn("Unable to read file {}", filePath);
@@ -46,7 +45,11 @@ public class ConfigMap {
             content = Optional.of(newContent);
             LOGGER.trace("content match ({}) = {} ", filePath, currentContent.equals(newContent));
 
-            return !currentContent.equals(newContent);
+            if(!currentContent.equals(newContent)) {
+                LOGGER.debug("Content changed for file path {}", filePath);
+                return true;
+            }
+
         } catch (IOException e) {
             LOGGER.error("Error updating mounted file %{} {} ", path, filePath);
             content = Optional.empty();

@@ -56,22 +56,26 @@ spec:
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
         volumeMounts:
-{{- range $rConfig := .Values.runtimeConfigs }}
-        - name: {{ $rConfig.name }}-cm-volume
-          mountPath: {{ $rConfig.path }}/{{ $rConfig.file }}
-          subPath: {{ $rConfig.file }}
+{{- range .Values.runtimeConfigs }}
+        - name: lodestar-runtime-{{ . }}-cm-volume
+          mountPath: {{ $.Values.baseConfigMapPath }}/{{ . }}
 {{- end }}
+        - name: hook-cm-volume
+          mountPath: /hooks
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       schedulerName: default-scheduler
       securityContext: {}
       terminationGracePeriodSeconds: 30
       volumes:
-{{- range $rConfig := .Values.runtimeConfigs }}
-      - name: {{ $rConfig.name }}-cm-volume
+  {{- range .Values.runtimeConfigs }}
+      - name: lodestar-runtime-{{ . }}-cm-volume
         configMap:
-          name: {{ $rConfig.name }}-cm
+          name: lodestar-runtime-{{ . }}-cm
 {{- end }}
+      - name: hook-cm-volume
+        configMap:
+          name: hook-cm
   test: false
   triggers:
   - type: ConfigChange

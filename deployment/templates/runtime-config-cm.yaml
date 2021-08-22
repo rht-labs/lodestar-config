@@ -1,7 +1,7 @@
 {{- if .Values.development }}
 apiVersion: v1
 data:
-  lodestar-runtime-config.yaml: |
+  lodestar-runtime-config-base.yaml: |
     ---
     basic_information:
       engagement_types:
@@ -25,5 +25,5 @@ data:
           value: optionTwo
 kind: ConfigMap
 metadata:
-  name: lodestar-runtime-cm
+  name: lodestar-runtime-base-cm
 {{- end }}
