@@ -1,7 +1,5 @@
 package com.redhat.labs.lodestar.service;
 
-import java.io.IOException;
-import java.nio.file.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -40,7 +38,7 @@ public class RuntimeConfigService {
      */
     void onStart(@Observes StartupEvent ev) {
         createRuntimeConfigurations();
-        loadModifiedWebhooks();
+        loadModifiedConfigs();
         LOGGER.debug("runtime configurations loaded.");
     }
 
@@ -48,7 +46,7 @@ public class RuntimeConfigService {
      * Can't trust modification of config maps meta-data. need to read the data
      */
     @Scheduled(every = "60s", delayed = "10s")
-    void loadModifiedWebhooks() {
+    void loadModifiedConfigs() {
         baseConfiguration.loadFromConfigMapIfChanged();
         overrideConfigurations.values().forEach(RuntimeConfiguration::loadFromConfigMapIfChanged);
     }
