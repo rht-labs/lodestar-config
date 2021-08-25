@@ -11,73 +11,48 @@ import javax.json.bind.JsonbConfig;
 import org.junit.jupiter.api.Test;
 
 import com.redhat.labs.lodestar.utils.ResourceLoader;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class ConfigServiceTest {
 
     JsonbConfig config = new JsonbConfig().withFormatting(true);
     Jsonb jsonb = JsonbBuilder.create(config);
 
-    @Test
-    void testGetBaseConfiguration() {
+    @ParameterizedTest
+    @NullSource
+    @ValueSource(strings = { "TypeOne", " TypeTwo", "TypeThree" })
+    void testGetBaseConfiguration(String type) {
 
-        String expected = ResourceLoader.load("expected/service-base-config.json");
+        String expected = ResourceLoader.load(getExpected(type == null ? "" : type));
 
         RuntimeConfigService service = new RuntimeConfigService();
         service.jsonb = jsonb;
-        service.runtimeBaseConfig = "src/test/resources/base-config.yaml";
+        service.runtimeBaseConfig = "src/test/resources/runtime-config-base.yaml";
 
         service.createRuntimeConfigurations();
 
-        String configuration = service.getRuntimeConfiguration(Optional.empty());
+        Optional configOption = Optional.ofNullable(type);
+
+        String configuration = service.getRuntimeConfiguration(configOption);
         assertEquals(expected, configuration);
 
     }
 
-    @Test
-    void testGetTypeOneConfiguration() {
+    private String getExpected(String type) {
+        String expected;
+        switch (type) {
+            case "TypeOne":
+                expected = "expected/service-get-type-one-config.json";
+                break;
+            case "TypeTwo":
+                expected = "expected/service-get-type-two-config.json";
+                break;
+            default:
+                expected = "expected/service-base-config.json";
+        }
 
-        String expected = ResourceLoader.load("expected/service-get-type-one-config.json");
-
-        RuntimeConfigService service = new RuntimeConfigService();
-        service.jsonb = jsonb;
-        service.runtimeBaseConfig = "src/test/resources/base-config.yaml";
-
-        service.createRuntimeConfigurations();
-
-        String configuration = service.getRuntimeConfiguration(Optional.of("TypeOne"));
-        assertEquals(expected, configuration);
-
+        return expected;
     }
-
-    @Test
-    void testGetTypeTwoConfiguration() {
-        String expected = ResourceLoader.load("expected/service-get-type-two-config.json");
-
-        RuntimeConfigService service = new RuntimeConfigService();
-        service.jsonb = jsonb;
-        service.runtimeBaseConfig = "src/test/resources/base-config.yaml";
-
-        service.createRuntimeConfigurations();
-
-        String configuration = service.getRuntimeConfiguration(Optional.of("TypeTwo"));
-        assertEquals(expected, configuration);
-
-    }
-
-    @Test
-    void testGetTypeThreeConfigurationNotFound() {
-
-        String expected = ResourceLoader.load("expected/service-get-type-three-config.json");
-
-        RuntimeConfigService service = new RuntimeConfigService();
-        service.jsonb = jsonb;
-        service.runtimeBaseConfig = "src/test/resources/base-config.yaml";
-
-        service.createRuntimeConfigurations();
-
-        String configuration = service.getRuntimeConfiguration(Optional.of("TypeThree"));
-        assertEquals(expected, configuration);
-
-    }
-
 }

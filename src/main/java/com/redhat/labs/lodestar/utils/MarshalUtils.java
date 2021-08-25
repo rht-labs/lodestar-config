@@ -1,11 +1,12 @@
 package com.redhat.labs.lodestar.utils;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.io.IOException;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.databind.JavaType;
+import com.redhat.labs.lodestar.model.GitlabHook;
+import com.redhat.labs.lodestar.model.GitlabHookConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,6 +80,20 @@ public class MarshalUtils {
 
         return merged;
 
+    }
+
+    public static List<GitlabHook> convertToHookList(Optional<String> yaml) {
+        JavaType type = om.getTypeFactory().constructCollectionType(List.class, GitlabHook.class);
+
+        if(yaml.isPresent()) {
+            try {
+                return om.readValue(yaml.get(), type);
+            } catch (IOException ex) {
+                LOGGER.error(String.format("Found but unable to map file %s", yaml.get()), ex);
+            }
+        }
+
+        return Collections.emptyList();
     }
 
     /**
