@@ -18,7 +18,7 @@ import java.util.List;
 public interface EngagementApiRestClient {
 
     @PUT
-    @Path("/api/v1/engagements/gitlab-webhooks")
+    @Path("/api/v2/engagements/gitlab-webhooks")
     Response updateWebhooks(List<GitlabHook> webhooks);
 
 }
