@@ -14,6 +14,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.ws.rs.ProcessingException;
+import javax.ws.rs.WebApplicationException;
 import java.util.List;
 
 /**
@@ -56,8 +57,8 @@ public class GitlabHookService {
             try {
                 engagementApiRestClient.updateWebhooks(gitlabHookConfiguration.getHooks());
                 LOGGER.debug("gitlab webhooks updated.");
-            } catch (ProcessingException ex) { //Only needed until engagements comes online
-                LOGGER.error(ex.getMessage());
+            } catch (ProcessingException | WebApplicationException ex) { //Only needed until engagements comes online
+                LOGGER.error("This should occur before v2", ex.getMessage());
             }
         }
     }
