@@ -65,41 +65,57 @@ public class RuntimeConfigService {
         baseConfiguration.loadFromConfigMapIfChanged();
 
         // Get List of engagement types from base config
-        List<String> engagementTypes = getEngagementTypes();
+        Collection<String> engagementTypes = getEngagementOptions().keySet();
 
-        engagementTypes.stream().forEach(this::createOverrideConfig);
+        engagementTypes.forEach(this::createOverrideConfig);
         LOGGER.debug("override configurations: {}", overrideConfigurations.keySet());
 
     }
 
-    /**
-     * Returns a {@link List} of {@link String} engagement type values from the
-     * configured base {@link RuntimeConfiguration}. Otherwise, an empty
-     * {@link List} is returned.
-     * 
-     * @return
-     */
     @SuppressWarnings("unchecked")
-    List<String> getEngagementTypes() {
+    public Map<Object, Object> getArtifactOptions() {
+        Map<String, Object> configuration = baseConfiguration.getConfiguration();
+        List<Map<String, Object>> typesList = Optional.of(configuration)
+                .map(m -> (Map<String, Object>) m.get("artifact_options"))
+                .map(m -> (Map<String, Object>) m.get("types"))
+                .map(m -> (List<Map<String, Object>>) m.get("options")).orElse(new ArrayList<>());
 
+        return typesList.stream().collect(Collectors.toMap(s -> s.get("value"), s -> s.get("label")));
+    }
+
+
+    /**
+     * Returns a {@link Map} of {@link String} engagement type key / values from the
+     * configured base {@link RuntimeConfiguration}. Empty if none found
+     *
+     * @return a map of engagements
+     */
+    public Map<String, String> getEngagementOptions() {
+        return getEngagementOptions("engagement_types");
+    }
+
+    public Map<String, String> getEngagementRegionOptions() {
+        return getEngagementOptions("engagement_regions");
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<String, String> getEngagementOptions(String type) {
         Map<String, Object> configuration = baseConfiguration.getConfiguration();
         List<Map<String, Object>> typesList = Optional.of(configuration)
                 .map(m -> (Map<String, Object>) m.get("basic_information"))
-                .map(m -> (Map<String, Object>) m.get("engagement_types"))
+                .map(m -> (Map<String, Object>) m.get(type))
                 .map(m -> (List<Map<String, Object>>) m.get("options")).orElse(new ArrayList<>());
 
-        return typesList.stream().flatMap(m -> m.entrySet().stream()).filter(e -> e.getKey().equals("value"))
-                .map(e -> e.getValue().toString()).collect(Collectors.toList());
-
+        return typesList.stream().collect(Collectors.toMap(s -> (String) s.get("value"), s -> (String) s.get("label")));
     }
 
     /**
      * Creates and adds a {@link RuntimeConfiguration} to the override
      * configurations {@link Map} for the given engagement type.
-     * 
-     * @param engagementType
+     *
+     * @param engagementType - the type of engagement
      */
-    void createOverrideConfig(String engagementType) {
+     void createOverrideConfig(String engagementType) {
         String filePath = this.runtimeBaseConfig.replaceAll("base", engagementType);
         RuntimeConfiguration rc = RuntimeConfiguration.builder().filePath(filePath).build();
         if(rc.checkPath()) {
@@ -116,9 +132,9 @@ public class RuntimeConfigService {
      * configuration will be returned.
      * 
      * @param engagementType
-     * @return
+     * @return a map of runtime configurations
      */
-    public String getRuntimeConfiguration(Optional<String> engagementType) {
+    public Map<String, Object> mapRuntimeConfiguration(Optional<String> engagementType) {
 
         // get map for base configuration
         Map<String, Object> base = baseConfiguration.getConfiguration();
@@ -126,19 +142,23 @@ public class RuntimeConfigService {
         if (engagementType.isPresent() && overrideConfigurations.containsKey(engagementType.get())) {
 
             Map<String, Object> override = overrideConfigurations.get(engagementType.get()).getConfiguration();
-            return jsonb.toJson(MarshalUtils.merge(base, override));
+            base = MarshalUtils.merge(base, override);
 
         }
 
-        return jsonb.toJson(base);
+        return base;
 
+    }
+
+    public String getRuntimeConfiguration(Optional<String> engagementType) {
+        return jsonb.toJson(mapRuntimeConfiguration(engagementType));
     }
     
     /**
      * Returns a mapping of engagement type to rbac access indicating the groups 
      * that can write engagements. The purpose is to inform the front end on a user's
      * ability to write data for an engagement
-     * @return
+     * @return a map of permissions per group
      */
     @SuppressWarnings("unchecked")
     public Map<String, Set<String>> getPermission() {
