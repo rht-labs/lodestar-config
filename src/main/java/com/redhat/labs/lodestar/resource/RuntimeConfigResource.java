@@ -1,5 +1,6 @@
 package com.redhat.labs.lodestar.resource;
 
+import java.util.Map;
 import java.util.Optional;
 
 import javax.inject.Inject;
@@ -24,6 +25,24 @@ public class RuntimeConfigResource {
     @GET
     public String get(@QueryParam("type") Optional<String> type) {
         return configService.getRuntimeConfiguration(type);
+    }
+
+    @GET
+    @Path("artifact/options")
+    public Map<Object, Object> getArtifactOptions() {
+        return configService.getArtifactOptions();
+    }
+
+    @GET
+    @Path("engagement/options")
+    public Map<String, String> getEngagementOptions() {
+        return configService.getEngagementOptions();
+    }
+
+    @GET
+    @Path("region/options")
+    public Map<String, String> getRegionOptions() {
+        return configService.getEngagementRegionOptions();
     }
     
     @GET

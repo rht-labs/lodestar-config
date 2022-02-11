@@ -2,13 +2,17 @@ package com.redhat.labs.lodestar.resource;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.path.json.JsonPath.from;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.restassured.path.json.JsonPath;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import com.redhat.labs.lodestar.utils.ResourceLoader;
@@ -43,22 +47,31 @@ class RuntimeConfigResourceTest {
     
     @Test
     void testGetRuntimeConfigurationNoType() {
-        String response = ResourceLoader.load("expected/service-base-config.json");
-        given().when().contentType(ContentType.JSON).get().then().statusCode(200).body(is(response));
+        String expectedResponse = ResourceLoader.load("expected/service-base-config.json");
+        String response = given().when().contentType(ContentType.JSON).get()
+                .then().statusCode(200).extract().asString();
+
+        Assertions.assertEquals(expectedResponse, response);
 
     }
 
     @Test
-    void testGetRuntimeConfigurationTypeOne() {
-        String response = ResourceLoader.load("expected/service-get-type-one-config.json");
-        given().when().contentType(ContentType.JSON).queryParam("type", "TypeOne").get().then().statusCode(200).body(is(response));
+    void testGetRuntimeConfigurationTypeOne() throws Exception {
+        String expectedResponse = ResourceLoader.load("expected/service-get-type-one-config.json");
+        String response = given().when().contentType(ContentType.JSON).queryParam("type", "TypeOne").get()
+                .then().statusCode(200).extract().asString();
+
+        Assertions.assertEquals(expectedResponse, response);
 
     }
 
     @Test
     void testGetRuntimeConfigurationTypeTwo() {
-        String response = ResourceLoader.load("expected/service-get-type-two-config.json");
-        given().when().contentType(ContentType.JSON).queryParam("type", "TypeTwo").get().then().statusCode(200).body(is(response));
+        String expectedResponse = ResourceLoader.load("expected/service-get-type-two-config.json");
+        String response = given().when().contentType(ContentType.JSON).queryParam("type", "TypeTwo").get()
+                .then().statusCode(200).extract().asString();
+
+        Assertions.assertEquals(expectedResponse, response);
 
     }
 
@@ -66,6 +79,30 @@ class RuntimeConfigResourceTest {
     void testGetRuntimeConfigurationTypeUnknown() {
         String response = ResourceLoader.load("expected/service-base-config.json");
         given().when().contentType(ContentType.JSON).queryParam("type", "TypeThree").get().then().statusCode(200).body(is(response));
+
+    }
+
+    @Test
+    void testGetArtifactOptions() {
+        given().when().contentType(ContentType.JSON).get("artifact/options")
+                .then().statusCode(200).body("size()", equalTo(1))
+                .body("flyer", equalTo("Flyer"));
+
+    }
+
+    @Test
+    void testGetEngagementRegionOptions() {
+        given().when().contentType(ContentType.JSON).get("region/options")
+                .then().statusCode(200).body("size()", equalTo(1))
+                .body("tuscana", equalTo("Tuscony"));
+
+    }
+
+    @Test
+    void testGetEngagementOptions() {
+        given().when().contentType(ContentType.JSON).get("engagement/options")
+                .then().statusCode(200).body("size()", equalTo(3))
+                .body("TypeOne", equalTo("Type One"));
 
     }
 

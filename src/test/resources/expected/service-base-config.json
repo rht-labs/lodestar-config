@@ -17,6 +17,14 @@
                     "default": true
                 }
             ]
+        },
+        "engagement_regions": {
+            "options": [
+                {
+                    "label": "Tuscony",
+                    "value": "tuscana"
+                }
+            ]
         }
     },
     "more_information": {
@@ -49,5 +57,15 @@
             "velour-writer",
             "writer"
         ]
+    },
+    "artifact_options": {
+        "types": {
+            "options": [
+                {
+                    "value": "flyer",
+                    "label": "Flyer"
+                }
+            ]
+        }
     }
 }

@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.redhat.labs.lodestar.model.GitlabHook;
-import com.redhat.labs.lodestar.model.GitlabHookConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

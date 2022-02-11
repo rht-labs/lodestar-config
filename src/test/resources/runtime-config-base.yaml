@@ -9,6 +9,10 @@ basic_information:
       - label: TypeThree
         value: TypeThree
         default: true
+  engagement_regions:
+    options:
+      - label: Tuscony
+        value: tuscana
 more_information:
   some_value: hello
   another_value: base
@@ -28,3 +32,8 @@ rbac:
   velour:
   - velour-writer
   - writer
+artifact_options:
+  types:
+    options:
+      - value: flyer
+        label: Flyer

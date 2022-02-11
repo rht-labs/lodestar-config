@@ -17,6 +17,16 @@
             "writer"
         ]
     },
+    "artifact_options": {
+        "types": {
+            "options": [
+                {
+                    "value": "flyer",
+                    "label": "Flyer"
+                }
+            ]
+        }
+    },
     "basic_information": {
         "engagement_types": {
             "options": [
@@ -32,6 +42,14 @@
                     "label": "TypeThree",
                     "value": "TypeThree",
                     "default": true
+                }
+            ]
+        },
+        "engagement_regions": {
+            "options": [
+                {
+                    "label": "Tuscony",
+                    "value": "tuscana"
                 }
             ]
         }
