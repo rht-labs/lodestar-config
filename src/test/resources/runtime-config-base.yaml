@@ -37,3 +37,11 @@ artifact_options:
     options:
       - value: flyer
         label: Flyer
+user_options:
+  user_roles:
+    options:
+      - value: jurist
+        label: Jurist
+      - value: judge
+        label: Judge
+

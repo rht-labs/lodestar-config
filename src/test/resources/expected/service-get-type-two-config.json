@@ -54,6 +54,20 @@
             ]
         }
     },
+    "user_options": {
+        "user_roles": {
+            "options": [
+                {
+                    "value": "defendant",
+                    "label": "Defendant"
+                },
+                {
+                    "value": "plaintiff",
+                    "label": "Plaintiff"
+                }
+            ]
+        }
+    },
     "other_options": {
         "types": {
             "options": [

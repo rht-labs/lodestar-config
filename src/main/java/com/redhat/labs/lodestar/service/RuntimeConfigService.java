@@ -73,6 +73,17 @@ public class RuntimeConfigService {
     }
 
     @SuppressWarnings("unchecked")
+    public Map<Object, Object> getParticipantRoleOptions(String engagementType) {
+        Map<String, Object> runtime = mapRuntimeConfigurationTypeRequired(engagementType);
+        List<Map<String, Object>> typesList = Optional.of(runtime)
+                .map(m -> (Map<String, Object>) m.get("user_options"))
+                .map(m -> (Map<String, Object>) m.get("user_roles"))
+                .map(m -> (List<Map<String, Object>>) m.get("options")).orElse(new ArrayList<>());
+
+        return typesList.stream().collect(Collectors.toMap(s -> s.get("value"), s -> s.get("label")));
+    }
+
+    @SuppressWarnings("unchecked")
     public Map<Object, Object> getArtifactOptions() {
         Map<String, Object> configuration = baseConfiguration.getConfiguration();
         List<Map<String, Object>> typesList = Optional.of(configuration)
@@ -136,12 +147,22 @@ public class RuntimeConfigService {
      */
     public Map<String, Object> mapRuntimeConfiguration(Optional<String> engagementType) {
 
+        if (engagementType.isPresent()) {
+            return mapRuntimeConfigurationTypeRequired(engagementType.get());
+        }
+
+        return baseConfiguration.getConfiguration();
+
+    }
+
+    public Map<String, Object> mapRuntimeConfigurationTypeRequired(String engagementType) {
+
         // get map for base configuration
         Map<String, Object> base = baseConfiguration.getConfiguration();
 
-        if (engagementType.isPresent() && overrideConfigurations.containsKey(engagementType.get())) {
+        if (overrideConfigurations.containsKey(engagementType)) {
 
-            Map<String, Object> override = overrideConfigurations.get(engagementType.get()).getConfiguration();
+            Map<String, Object> override = overrideConfigurations.get(engagementType).getConfiguration();
             base = MarshalUtils.merge(base, override);
 
         }
