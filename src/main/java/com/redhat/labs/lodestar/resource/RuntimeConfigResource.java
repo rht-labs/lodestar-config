@@ -44,6 +44,12 @@ public class RuntimeConfigResource {
     public Map<String, String> getRegionOptions() {
         return configService.getEngagementRegionOptions();
     }
+
+    @GET
+    @Path("participant/options")
+    public Map<Object, Object> getParticipantOptions(@QueryParam("engagementType") String type) {
+        return configService.getParticipantRoleOptions(type);
+    }
     
     @GET
     @Path("rbac")

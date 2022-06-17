@@ -9,10 +9,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.List;
 import java.util.Map;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.restassured.path.json.JsonPath;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import com.redhat.labs.lodestar.utils.ResourceLoader;
@@ -51,7 +47,7 @@ class RuntimeConfigResourceTest {
         String response = given().when().contentType(ContentType.JSON).get()
                 .then().statusCode(200).extract().asString();
 
-        Assertions.assertEquals(expectedResponse, response);
+        assertEquals(expectedResponse, response);
 
     }
 
@@ -61,7 +57,7 @@ class RuntimeConfigResourceTest {
         String response = given().when().contentType(ContentType.JSON).queryParam("type", "TypeOne").get()
                 .then().statusCode(200).extract().asString();
 
-        Assertions.assertEquals(expectedResponse, response);
+        assertEquals(expectedResponse, response);
 
     }
 
@@ -71,7 +67,7 @@ class RuntimeConfigResourceTest {
         String response = given().when().contentType(ContentType.JSON).queryParam("type", "TypeTwo").get()
                 .then().statusCode(200).extract().asString();
 
-        Assertions.assertEquals(expectedResponse, response);
+        assertEquals(expectedResponse, response);
 
     }
 
@@ -103,6 +99,22 @@ class RuntimeConfigResourceTest {
         given().when().contentType(ContentType.JSON).get("engagement/options")
                 .then().statusCode(200).body("size()", equalTo(3))
                 .body("TypeOne", equalTo("Type One"));
+
+    }
+
+    @Test
+    void testGetParticipantOptions() {
+        given().when().contentType(ContentType.JSON).get("participant/options")
+                .then().statusCode(200).body("size()", equalTo(2))
+                .body("jurist", equalTo("Jurist")).body("judge", equalTo("Judge"));
+
+    }
+
+    @Test
+    void testGetParticipantOptionsTyped() {
+        given().queryParam("engagementType", "TypeTwo").when().contentType(ContentType.JSON).get("participant/options")
+                .then().statusCode(200).body("size()", equalTo(2))
+                .body("plaintiff", equalTo("Plaintiff")).body("defendant", equalTo("Defendant"));
 
     }
 
